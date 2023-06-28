@@ -21,7 +21,7 @@ def run(
     beam_options: Optional[PipelineOptions] = None,
     test: Callable[[beam.PCollection], None] = lambda _: None,
 ) -> None:
-    with beam.Pipeline(options=beam_options, runner=InteractiveRunner()) as pipeline:
+    with beam.Pipeline(options=beam_options, runner='direct') as pipeline:
         write_to_mysql = WriteToMySQL(
             host="localhost",
             database="acme",
@@ -53,23 +53,17 @@ def run(
         #     | "Split line" >> beam.Map(lambda item: item.split(","))
         #     | "to row" >> beam.Map(lambda item: beam.Row(first_name=item[0], last_name=item[1], serial_number=item[2]))
         # )
+        # badge_df = to_dataframe(new_badge_infor_collection)
 
         employee_df = to_dataframe(employee_collection)
-        # badge_df = to_dataframe(new_badge_infor_collection)
         badge_df = pipeline | beam.dataframe.io.read_csv("../employees - infos badge à mettre à jour.csv")
        
         new_df = employee_df.join(badge_df, lsuffix='_caller', rsuffix='_other').filter(items=['badge_serial_number', 'employee_id'])
 
-        print(ib.collect(new_df))
-
-        # to_pcollection(new_df) | "write to sql " >> write_to_mysql
-
-        (
-        pipeline
-        | "ReadFromInMemory" >> beam.Create([{"badge_serial_number": '4180485c-ad12-45d0-a4e9-99b0db7a5f75'}, {"employee_id": 1}])
-        | "NoTransform" >> beam.Map(lambda e: e)
-        | "WriteToMySQL" >> write_to_mysql
-        )
+        # print(ib.collect(new_df))
+        to_pcollection(new_df) | "cast to dict" >> beam.Map(lambda e: {"badge_serial_number": e[0], "employee_id": e[1]}) \
+                               | "write to sql " >> write_to_mysql
+        
 
         # # Used for testing only.
         test(employee_collection)
