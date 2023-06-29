@@ -52,7 +52,26 @@ limit 3;
 | 251         | 5     |
 | 849         | 4     |
 
-3. We also want to check the correctness  of data in `employee` table: for example: email is valid, we have both `first_name` and `last_name`
+3. We also want to check the duplicate data of employee
+```sql
+SELECT e1.*
+FROM employee e1
+JOIN employee e2 ON e1.first_name = e2.first_name AND e1.lastName = e2.lastName
+WHERE e1.id <> e2.id
+order by e1.first_name;
+```
+| id | first_name | last_name | email | groupe_id |
+| :--- | :--- | :--- | :--- | :--- |
+| 1170 | Elian | Foster | elian.foster@acme.com | 1 |
+| 808 | Elian | Foster | elian.foster@acme.com | 1 |
+| 1171 | Freddie | Brooks | freddie.brooks@acme.com | 2 |
+| 809 | Freddie | Brooks | freddie.brooks@acme.com | 1 |
+| 1169 | Isabella | Kelly | isabella.kelly@acme.com | 1 |
+| 960 | Isabella | Kelly | isabella.kelly@acme.com | 3 |
+| 656 | Lucy | Baker | lucy.baker@acme.com | 6 |
+| 1168 | Lucy | Baker | lucy.baker@acme.com | 3 |
+
+4. We also want to check the correctness  of data in `employee` table: for example: email is valid, we have both `first_name` and `last_name`
 ```sql
 SELECT id, email
 FROM acme.employee
