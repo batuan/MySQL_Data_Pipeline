@@ -28,6 +28,14 @@ CREATE TABLE `badge` (
 );
 ALTER TABLE `badge` ADD CONSTRAINT `fk_badge_employee` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`);
 
+CREATE TABLE `new_badge` ( 
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `badge_serial_number` VARCHAR(250) DEFAULT '' NOT NULL,
+  `employee_id` INT NULL,
+   PRIMARY KEY (`id`)
+);
+ALTER TABLE `new_badge` ADD CONSTRAINT `fk_new_badge_employee` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`);
+
 COMMIT;
 
 /*GROUPS*/
