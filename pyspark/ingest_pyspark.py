@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # Read the CSV file into a DataFrame
     df = spark.read.format("csv") \
         .option("header", "true") \
-        .load("./employees - infos badge à mettre à jour.csv")
+        .load("../employees - infos badge à mettre à jour.csv")
 
     # Perform join with the employee table to get the employee_id
     employee_df = spark.read.jdbc(mysql_properties["url"], "employee", properties=mysql_properties)

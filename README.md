@@ -1,6 +1,5 @@
 
 # Report techtechnique
-
 ## Question 1: Analysis of the data model
 Currently, the tech stack include:
 
@@ -109,6 +108,12 @@ Currently, I just thinking about create a dash bash that contains the cout of ea
 I create a dashboard by using Redash, you can check at that [link](http://34.155.163.109/public/dashboards/eAitZrr7GbGNsbuX0xcLzyIgEevDdqrnegDjUREQ?org_slug=default): 
 
 ## Integration of new data
+
+### 0. Start database
+```
+docker compose up -d
+```
+
 ### 1. Simple way (Python as ETL)
 ![](images/compare_data_employee.png)
 
