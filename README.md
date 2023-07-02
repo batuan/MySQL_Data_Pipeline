@@ -18,7 +18,8 @@ Currently, the tech stack include:
 
  1. Because of these problem have very simple database, so MySQL works well, but in real word, we should use Oracle,PostgreSQL or Microsoft SQL Server
 
- 2. Problem of docker-compose: The current password is password is not secure and it sets directly on docker environment variable, that is not best practices.  I recommend to use **`MYSQL_RANDOM_ROOT_PASSWORD`**  and then save the password to secure location or use (prefer) **`MYSQL_ROOT_PASSWORD_FILE`** to set the password. Read more at MySQL [document](https://dev.mysql.com/doc/mysql-installation-excerpt/8.0/en/docker-mysql-more-topics.html#docker_var_mysql-root-password). Another options by using [docker secret](https://blog.ruanbekker.com/blog/2017/11/23/use-docker-secrets-with-mysql-on-docker-swarm/)
+ 2. Problem of docker-compose: The current password is password is not secure and it sets directly on docker environment variable, that is not best practices.  
+I recommend to use **`MYSQL_RANDOM_ROOT_PASSWORD`**  and then save the password to secure location or use (prefer) **`MYSQL_ROOT_PASSWORD_FILE`** to set the password, or set **`MYSQL_ROOT_PASSWORD`** by an environment variable. Read more at MySQL [document](https://dev.mysql.com/doc/mysql-installation-excerpt/8.0/en/docker-mysql-more-topics.html#docker_var_mysql-root-password). Another options by using [docker swarm secret](https://blog.ruanbekker.com/blog/2017/11/23/use-docker-secrets-with-mysql-on-docker-swarm/), further advanced we have [hashicorp vault](https://www.vaultproject.io/) or [Bitnami Sealed Secrets](https://bitnami.com/stack/sealed-secrets) (combine with Kubernetes)
 
  3. The database is not well design (base on name convension of the columns).  We should change it to:
 	- employee(**employee_id**, first_name, **last_name**, groupe_id)
