@@ -52,6 +52,7 @@ limit 3;
 | 849         | 4     |
 
 3. We also want to check the duplicate data of employee
+<a name="duplicate"></a>
 ```sql
 SELECT e1.*
 FROM employee e1
@@ -150,14 +151,52 @@ The pipeline for apache spark:
 3. We select `serial_number` and `employee_id` 
 4. Write result to new dataframe
 
+When we join 2 dataframes by `first_name` and `last_name`, there are some cases that make whe have alot of duplicate data like the person who have `first_name` is "" and `last_name` is "" or some case in [section 2](#duplicate), so we need to get all emplyee that have unique `name`. The SQL query below help use do that
+
+```sql
+select id, first_name, lastName
+from employee
+where (first_name, lastName) IN (
+SELECT first_name, lastName
+    FROM employee
+    GROUP BY first_name, lastName
+    having count(*)=1);
+```
+
 How to run:
 
 1. Config hostname, port, user of MySQL from `.env` file
 2. `pip install -r requirements.txt`
-3. Run ingest: `export mysql_password=password | python ingest_pyspark.py` this command make our password more secure.
+3. Run ingest: 
+```bash
+export mysql_password=password
+python ingest_pyspark.py
+```
+
+this command make our password more secure.
 
 ### 3. Apache Beam
 
 With Apache beam, I have 2 solutions: 
  1. Use ParDo to process each row of PCollection
+    - Connect to database (with beam extension plugin)
+    - Create 2 PCollection that contain the new information and employee information like in [spark](#2-spark)
+    - Inner join
+    - Write to database
+
+How to run:
+Make sure you have `Maven` and `Java` SDK 17.0. You can follow the [instruction](https://github.com/apache/beam-starter-java/blob/main/README.md) of apache beam to install everything 
+
+```bash
+cd beam/beam-starter-java
+
+mvn package -Dmaven.test.skip
+
+java -jar ./target/beam-java-starter-1-jar-with-dependencies.jar  --inputMySQLHostName='localhost' --inputInfoBadgeCSVPath=../../employees\ -\ infos\ badge\ à\ mettre\ à\ jour.csv --inputMySQLUserName='root' --inputMySQLPassword='password'
+
+```
+Change the `hostname`, `user`, `password`, `path` by your setting.
+
+
  2. Convert PCollection to dataframe and then join
+ This method is spark dataframe-like method
