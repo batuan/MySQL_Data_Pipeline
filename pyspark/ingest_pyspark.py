@@ -2,6 +2,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 import os
 from dotenv import load_dotenv
+from pyspark.sql import functions as sf
+
 load_dotenv('../.env')
 
 # Create a SparkSession
@@ -27,6 +29,8 @@ if __name__ == "__main__":
     df = spark.read.format("csv") \
         .option("header", "true") \
         .load("../employees - infos badge à mettre à jour.csv")
+    df = df.fillna('').withColumn('full_name', sf.concat(sf.col('employee_first_name'),
+                                                         sf.lit('_'), sf.col('employee_last_name')))
 
     # Perform join with the employee table to get the employee_id
     employee_df = spark.read \
@@ -37,12 +41,13 @@ if __name__ == "__main__":
                     .option("password", os.getenv("mysql_password")) \
                     .option("query", query)\
                     .load()
-
+    employee_df = employee_df.withColumn('full_name_e', sf.concat(sf.col('first_name'),sf.lit('_'), sf.col('lastName')))
    
     # Join
-    df_with_employee_id = employee_df.join(
-        df, (df["employee_first_name"] == employee_df["first_name"]) & (df["employee_last_name"] == employee_df["lastName"]))\
-            .select(col("badge_serial_number").alias("badge_serial_number"), col("id").alias("employee_id"))
+    df_with_employee_id = employee_df.join(df, 
+                     on=(employee_df['full_name_e']==df['full_name']), how='inner') \
+                    .select(col("badge_serial_number").alias("badge_serial_number"), col("id").alias("employee_id"))
+    
     print(len(df_with_employee_id.collect()))
     # Write the DataFrame to the MySQL database
     df_with_employee_id.write.mode("append") \

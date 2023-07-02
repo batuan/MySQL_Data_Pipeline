@@ -1,0 +1,16 @@
+version: '3'
+ 
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql_best
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata_best:/var/lib/mysql
+      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+volumes:
+  dbdata_best:
